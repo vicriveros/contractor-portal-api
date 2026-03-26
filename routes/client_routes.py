@@ -1,0 +1,45 @@
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from database import get_db
+from models import User, Client
+from schemas import ClientCreate, Client as ClientSchema
+from auth import get_current_contractor
+
+router = APIRouter(prefix="/clients", tags=["Clients"])
+
+@router.post("/", response_model=ClientSchema, status_code=201)
+def create_client(
+    client_data: ClientCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_contractor)
+):
+    db_client = Client(
+        contractor_id=current_user.id,
+        **client_data.model_dump()
+    )
+    db.add(db_client)
+    db.commit()
+    db.refresh(db_client)
+    return db_client
+
+@router.get("/", response_model=List[ClientSchema])
+def list_clients(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_contractor)
+):
+    return db.query(Client).filter(Client.contractor_id == current_user.id).all()
+
+@router.get("/{client_id}", response_model=ClientSchema)
+def get_client(
+    client_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_contractor)
+):
+    client = db.query(Client).filter(
+        Client.id == client_id,
+        Client.contractor_id == current_user.id
+    ).first()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    return client
