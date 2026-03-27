@@ -4,7 +4,7 @@ from database import engine, Base
 from routes import auth_routes, client_routes, project_routes, file_routes
 
 # Create database tables
-Base.metadata.create_all(bind=engine)
+#Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Contractor Portal API", version="1.0.0")
 
