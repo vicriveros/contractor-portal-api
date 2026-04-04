@@ -29,14 +29,18 @@ class TokenData(BaseModel):
 # Client Schemas
 class ClientBase(BaseModel):
     company_name: Optional[str] = None
-    contact_name: str
+    contact_name: Optional[str] = None
     contact_email: Optional[EmailStr] = None
     contact_phone: Optional[str] = None
     address: Optional[str] = None
 
 class ClientCreate(ClientBase):
+    contact_name: str
     user_id: Optional[int] = None
 
+class ClientUpdate(ClientBase):
+    pass
+    
 class Client(ClientBase):
     id: int
     contractor_id: int
