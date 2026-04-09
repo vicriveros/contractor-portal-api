@@ -49,7 +49,7 @@ class Client(ClientBase):
 
 # Project Schemas
 class ProjectBase(BaseModel):
-    name: str
+    name: Optional[str] = None
     description: Optional[str] = None
     status: Optional[str] = "active"
     start_date: Optional[datetime] = None
@@ -57,10 +57,16 @@ class ProjectBase(BaseModel):
 
 class ProjectCreate(ProjectBase):
     client_id: int
+    name: str
+
+class ProjectUpdate(ProjectBase):
+    pass
 
 class Project(ProjectBase):
     id: int
     client_id: int
+    # para que Pydantic serialice el objeto relacionado
+    client: Optional[ClientBase] = None
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
