@@ -60,6 +60,7 @@ class ProjectCreate(ProjectBase):
     name: str
 
 class ProjectUpdate(ProjectBase):
+    client_id: Optional[int] = None
     pass
 
 class Project(ProjectBase):

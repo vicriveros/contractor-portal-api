@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     ALLOWED_IMAGE_EXTENSIONS: str = "jpg,jpeg,png,gif,webp"
     ALLOWED_DOCUMENT_EXTENSIONS: str = "pdf"
     
+    # Image Optimization
+    IMAGE_MAX_SIZE: int = 1920
+    IMAGE_QUALITY: int = 85
+    
     @property
     def allowed_image_extensions_list(self) -> List[str]:
         return [ext.strip() for ext in self.ALLOWED_IMAGE_EXTENSIONS.split(",")]
