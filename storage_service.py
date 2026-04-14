@@ -5,6 +5,8 @@ from typing import Optional
 import mimetypes
 import uuid
 from config import settings
+from sqlalchemy import event
+from models import ProjectFile
 
 class StorageService:
     def __init__(self):
@@ -68,5 +70,11 @@ class StorageService:
             return True
         except ClientError as e:
             raise Exception(f"Failed to delete file: {str(e)}")
+
+    @event.listens_for(ProjectFile, 'after_delete')
+    def receive_after_delete(mapper, connection, target):
+        # 'target' es la instancia de ProjectFile que se acaba de borrar
+        if target.storage_key:
+            storage_service.delete_file(target.storage_key)   
 
 storage_service = StorageService()

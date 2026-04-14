@@ -66,7 +66,7 @@ class ProjectUpdate(ProjectBase):
 class Project(ProjectBase):
     id: int
     client_id: int
-    # para que Pydantic serialice el objeto relacionado
+    # para que Pydantic muestre la info de cliente al listar proyectos
     client: Optional[ClientBase] = None
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)

@@ -112,7 +112,7 @@ def delete_file(
     
     if not file:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=404,
             detail="Archivo no encontrado"
         )
     
@@ -122,7 +122,7 @@ def delete_file(
     
     if client.contractor_id != current_user.id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=403,
             detail="No autorizado para eliminar este archivo"
         )
     
