@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 from schemas import UserCreate, User as UserSchema, Token
-from auth import authenticate_user, create_access_token, get_password_hash, get_current_user
+from auth import authenticate_user, create_access_token, get_password_hash, get_current_user, verify_password
 from config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -35,7 +35,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=401,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -50,3 +50,65 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 @router.get("/me", response_model=UserSchema)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+# ENDPOINTS PARA PERFIL
+
+@router.put("/me/profile", response_model=UserSchema)
+def update_profile(
+    email: str = None,
+    full_name: str = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update current user's profile information.
+    """
+    # Check if email is being changed and already exists
+    if email and email != current_user.email:
+        existing_email = db.query(User).filter(User.email == email).first()
+        if existing_email:
+            raise HTTPException(
+                status_code=400,
+                detail="Email already in use"
+            )
+        current_user.email = email
+    
+    # Update full name if provided
+    if full_name is not None:
+        current_user.full_name = full_name
+    
+    db.commit()
+    db.refresh(current_user)
+    
+    return current_user
+
+
+@router.put("/me/password")
+def change_password(
+    current_password: str,
+    new_password: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Change current user's password.
+    """
+    # Verify current password
+    if not verify_password(current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=400,
+            detail="Current password is incorrect"
+        )
+    
+    # Validate new password
+    if len(new_password) < 6:
+        raise HTTPException(
+            status_code=400,
+            detail="New password must be at least 6 characters"
+        )
+    
+    # Update password
+    current_user.hashed_password = get_password_hash(new_password)
+    db.commit()
+    
+    return {"message": "Password updated successfully"}
