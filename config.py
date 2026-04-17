@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE_MB: int = 10
     ALLOWED_IMAGE_EXTENSIONS: str = "jpg,jpeg,png,gif,webp"
     ALLOWED_DOCUMENT_EXTENSIONS: str = "pdf"
+    ALLOWED_VIDEO_EXTENSIONS: str = "mp4"
     
     # Image Optimization
     IMAGE_MAX_SIZE: int = 1920
@@ -28,6 +29,10 @@ class Settings(BaseSettings):
     @property
     def allowed_document_extensions_list(self) -> List[str]:
         return [ext.strip() for ext in self.ALLOWED_DOCUMENT_EXTENSIONS.split(",")]
+    
+    @property
+    def allowed_video_extensions_list(self) -> List[str]:
+        return [ext.strip() for ext in self.ALLOWED_VIDEO_EXTENSIONS.split(",")]
     
     @property
     def max_file_size_bytes(self) -> int:

@@ -11,6 +11,7 @@ class UserRole(str, enum.Enum):
 class FileType(str, enum.Enum):
     IMAGE = "image"
     DOCUMENT = "document"
+    VIDEO = "video"
 
 class User(Base):
     __tablename__ = "users"
@@ -58,6 +59,11 @@ class Project(Base):
     end_date = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    advisor = Column(String)
+    advisor_email = Column(String)
+    advisor_phone = Column(String)
+    project_manager = Column(String)
+
     
     client = relationship("Client", back_populates="projects")
     files = relationship("ProjectFile", back_populates="project", cascade="all, delete-orphan")

@@ -33,8 +33,13 @@ async def upload_file(
         file_type = FileType.IMAGE
     elif file_extension in settings.allowed_document_extensions_list:
         file_type = FileType.DOCUMENT
+    elif file_extension in settings.allowed_video_extensions_list:
+        file_type = FileType.VIDEO
     else:
-        raise HTTPException(status_code=400, detail="File type not allowed")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"File type not allowed. Allowed: images ({', '.join(settings.allowed_image_extensions_list)}), documents ({', '.join(settings.allowed_document_extensions_list)}), videos ({', '.join(settings.allowed_video_extensions_list)})"
+        )
     
     # Read file content
     file_content = await file.read()
@@ -80,6 +85,12 @@ async def upload_file(
     db.add(db_file)
     db.commit()
     db.refresh(db_file)
+
+    # Generate presigned URL
+    db_file.presigned_url = storage_service.generate_presigned_url(
+        db_file.storage_key,
+        expiration=3600
+    )
     
     return db_file
 

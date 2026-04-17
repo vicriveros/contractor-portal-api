@@ -54,6 +54,11 @@ class ProjectBase(BaseModel):
     status: Optional[str] = "active"
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
+    advisor: Optional[str] = None
+    advisor_email: Optional[str] = None
+    advisor_phone: Optional[str] = None
+    project_manager: Optional[str] = None
+
 
 class ProjectCreate(ProjectBase):
     client_id: int

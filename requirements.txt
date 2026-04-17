@@ -11,3 +11,4 @@ pydantic-settings==2.13.1
 boto3==1.42.74
 pillow==12.1.1
 python-dotenv==1.2.2
+ffmpeg-python==0.2.0

@@ -69,7 +69,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('project_id', sa.Integer(), nullable=False),
     sa.Column('file_name', sa.String(), nullable=False),
-    sa.Column('file_type', sa.Enum('IMAGE', 'DOCUMENT', name='filetype'), nullable=False),
+    sa.Column('file_type', sa.Enum('IMAGE', 'DOCUMENT', 'VIDEO', name='filetype'), nullable=False),
     sa.Column('file_size', sa.Integer(), nullable=True),
     sa.Column('storage_key', sa.String(), nullable=False),
     sa.Column('storage_url', sa.String(), nullable=True),
