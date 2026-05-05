@@ -23,6 +23,7 @@ class UserUpdate(BaseModel):
 class User(UserBase):
     id: int
     created_at: datetime
+    client_profile: Optional[Client] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Token Schemas
