@@ -87,6 +87,28 @@ def update_user(
     db.refresh(user)
     return user
 
+@router.put("/{user_id}/password")
+def change_user_password(
+    user_id: int,
+    new_password: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Safely update a user's password.
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+        
+    user.hashed_password = get_password_hash(new_password)
+    db.commit()
+    
+    return {"message": "Password updated successfully"}
+
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(
     user_id: int,
