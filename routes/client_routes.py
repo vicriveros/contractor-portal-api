@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Client
 from schemas import ClientCreate, ClientUpdate, Client as ClientSchema
-from auth import get_current_contractor
+from auth import get_current_contractor, get_current_user
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
@@ -26,20 +26,17 @@ def create_client(
 @router.get("/", response_model=List[ClientSchema])
 def list_clients(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
-    return db.query(Client).filter(Client.contractor_id == current_user.id).all()
+    return db.query(Client).all()
 
 @router.get("/{client_id}", response_model=ClientSchema)
 def get_client(
     client_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
-    client = db.query(Client).filter(
-        Client.id == client_id,
-        Client.contractor_id == current_user.id
-    ).first()
+    client = db.query(Client).filter(Client.id == client_id).first()
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     return client
@@ -49,12 +46,9 @@ def update_client(
     client_id: int,
     client_data: ClientUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
-    client = db.query(Client).filter(
-        Client.id == client_id,
-        Client.contractor_id == current_user.id
-    ).first()
+    client = db.query(Client).filter(Client.id == client_id).first()
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
@@ -71,12 +65,9 @@ def update_client(
 def delete_client(
     client_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
-    client = db.query(Client).filter(
-        Client.id == client_id,
-        Client.contractor_id == current_user.id
-    ).first()
+    client = db.query(Client).filter(Client.id == client_id).first()
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     db.delete(client)
