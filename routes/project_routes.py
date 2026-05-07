@@ -57,11 +57,10 @@ def update_project(
     project_id: int,
     project_data: ProjectUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
     project = db.query(Project).join(Client).filter(
-        Project.id == project_id,
-        Client.contractor_id == current_user.id
+        Project.id == project_id
     ).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -79,7 +78,7 @@ def update_project(
 def delete_project(
     project_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
     project = db.query(Project).filter(
         Project.id == project_id
