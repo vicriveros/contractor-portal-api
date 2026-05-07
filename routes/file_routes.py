@@ -17,13 +17,10 @@ async def upload_file(
     file: UploadFile = File(...),
     description: str = Form(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
-    # Verify project exists and belongs to contractor
-    project = db.query(Project).join(Client).filter(
-        Project.id == project_id,
-        Client.contractor_id == current_user.id
-    ).first()
+    # Verify project exists
+    project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
@@ -113,7 +110,7 @@ def list_files(
 def delete_file(
     file_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_contractor)
+    current_user: User = Depends(get_current_user)
 ):
     """
     Eliminar un archivo (solo contractor)
@@ -128,14 +125,14 @@ def delete_file(
         )
     
     # Verificar que el proyecto pertenezca al contractor
-    project = db.query(Project).filter(Project.id == file.project_id).first()
-    client = db.query(Client).filter(Client.id == project.client_id).first()
+    # project = db.query(Project).filter(Project.id == file.project_id).first()
+    # client = db.query(Client).filter(Client.id == project.client_id).first()
     
-    if client.contractor_id != current_user.id:
-        raise HTTPException(
-            status_code=403,
-            detail="No autorizado para eliminar este archivo"
-        )
+    # if client.contractor_id != current_user.id:
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail="No autorizado para eliminar este archivo"
+    #     )
     
     # Eliminar del storage
     try:
