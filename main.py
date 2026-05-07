@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from routes import auth_routes, client_routes, project_routes, file_routes, user_routes
+from config import settings
 
 # Create database tables
 #Base.metadata.create_all(bind=engine)
@@ -11,7 +12,10 @@ app = FastAPI(title="Contractor Portal API", version="1.0.0")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change in production
+    allow_origins=[
+        "http://localhost:5173",
+        settings.FRONTEND_URL
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
